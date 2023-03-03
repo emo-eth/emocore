@@ -2,8 +2,9 @@
 pragma solidity ^0.8.17;
 
 contract CommitReveal {
-    error CommitmentExpired(uint256 committedTimestamp);
-    error CommitmentPending(uint256 committedTimestamp);
+    error InvalidCommitment(uint256 committedTimestamp);
+
+    uint256 private constant INVALID_COMMITMENT_SELECTOR = 0x31e63ea0;
 
     uint256 public immutable COMMITMENT_LIFESPAN;
     uint256 public immutable COMMITMENT_DELAY;
@@ -63,16 +64,20 @@ contract CommitReveal {
         unchecked {
             timeDiff = block.timestamp - retrievedTimestamp;
         }
-        // if the time difference is greater than the commitment lifespan, the
-        // commitment
-        // has expired
-        if (timeDiff > COMMITMENT_LIFESPAN) {
-            revert CommitmentExpired(retrievedTimestamp);
-        } else if (timeDiff < COMMITMENT_DELAY) {
+        uint256 commitmentLifespan = COMMITMENT_LIFESPAN;
+        uint256 commitmentDelay = COMMITMENT_DELAY;
+        assembly {
+            // if the time difference is greater than the commitment lifespan,
+            // the commitment has expired
             // if the time difference is less than the commitment delay, the
-            // commitment is
-            // pending
-            revert CommitmentPending(retrievedTimestamp);
+            // commitment is pending
+            let invalidCommitment :=
+                or(gt(timeDiff, commitmentLifespan), lt(timeDiff, commitmentDelay))
+            if invalidCommitment {
+                mstore(0, INVALID_COMMITMENT_SELECTOR)
+                mstore(0x20, retrievedTimestamp)
+                revert(0x1c, 0x24)
+            }
         }
     }
 }

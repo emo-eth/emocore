@@ -32,7 +32,7 @@ contract ZeroByteSaltScorer is BaseSaltScorer {
                     or(iszero(thisByteIsZero), leadingInterrupted)
                 numTotal := add(numTotal, thisByteIsZero)
                 numLeading :=
-                    add(numLeading, mul(thisByteIsZero, iszero(leadingInterrupted)))
+                    add(numLeading, and(thisByteIsZero, iszero(leadingInterrupted)))
             }
         }
     }

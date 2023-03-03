@@ -19,7 +19,7 @@ contract CommitRevealTest is BaseTest {
         test.commit(commitment);
         vm.expectRevert(
             abi.encodeWithSelector(
-                CommitReveal.CommitmentPending.selector, originalTimestamp
+                CommitReveal.InvalidCommitment.selector, originalTimestamp
             )
         );
         test.assertCommittedReveal(commitment);
@@ -28,7 +28,7 @@ contract CommitRevealTest is BaseTest {
         vm.warp(originalTimestamp + test.COMMITMENT_LIFESPAN() + 1);
         vm.expectRevert(
             abi.encodeWithSelector(
-                CommitReveal.CommitmentExpired.selector, originalTimestamp
+                CommitReveal.InvalidCommitment.selector, originalTimestamp
             )
         );
         test.assertCommittedReveal(commitment);

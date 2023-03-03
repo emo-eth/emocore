@@ -71,12 +71,12 @@ contract ZeroNibbleSaltScorer is BaseSaltScorer {
                 numLeadingBytes :=
                     add(
                         numLeadingBytes,
-                        mul(thisByteIsZero, iszero(leadingInterrupted))
+                        and(thisByteIsZero, iszero(leadingInterrupted))
                     )
                 numLeadingNibbles :=
                     add(
                         numLeadingNibbles,
-                        mul(thisNibbleIsZero, iszero(leadingInterrupted))
+                        and(thisNibbleIsZero, iszero(leadingInterrupted))
                     )
             }
         }
